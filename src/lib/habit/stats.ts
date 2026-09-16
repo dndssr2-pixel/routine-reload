@@ -12,8 +12,8 @@ export function todayKey(): string {
 }
 
 export function parseDateKey(key: string): Date {
-  const [y, m, d] = key.split("-").map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
+  const parts = key.split("-").map(Number);
+  return new Date(parts[0] ?? 1970, (parts[1] ?? 1) - 1, parts[2] ?? 1);
 }
 
 export function shiftDays(key: string, delta: number): string {
@@ -66,11 +66,12 @@ export function currentStreak(data: AppData): number {
 
 export function bestStreak(data: AppData): number {
   const dates = trackedDates(data);
-  if (dates.length === 0) return 0;
+  const first = dates[0];
+  const last = dates[dates.length - 1];
+  if (!first || !last) return 0;
   let best = 0;
   let run = 0;
-  let cursor = dates[0];
-  const last = dates[dates.length - 1];
+  let cursor = first;
   for (let i = 0; i < 3650; i++) {
     if (dayStats(data, cursor).complete) {
       run++;
